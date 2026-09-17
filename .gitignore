@@ -1,0 +1,7 @@
+node_modules
+.env
+.codex
+generated/
+.DS_Store
+vault/keys/vault-keys.json
+.env_supabase

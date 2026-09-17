@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Invia Notifica</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 0 20px; }
+    label { display: block; margin-top: 16px; font-weight: bold; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    button { margin-top: 20px; padding: 10px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; }
+    button:hover { background: #2563eb; }
+    #feedback { margin-top: 12px; }
+    #login-feedback { margin-top: 8px; color: red; }
+    #main-section { display: none; }
+  </style>
+</head>
+<body>
+
+  <div id="login-section">
+    <h2>Login</h2>
+    <label>Username</label>
+    <input type="text" id="username" placeholder="username" />
+    <label>Password</label>
+    <input type="password" id="password" placeholder="password" />
+    <button onclick="login()">Login</button>
+    <div id="login-feedback"></div>
+  </div>
+
+  <div id="main-section">
+    <h2>Invia notifica</h2>
+
+    <label>User ID destinatario</label>
+    <input type="number" id="userId" placeholder="es. 2" />
+
+    <label>Titolo</label>
+    <input type="text" id="title" placeholder="es. Nuova partita" />
+
+    <label>Descrizione</label>
+    <textarea id="description" rows="3" placeholder="es. Ti sfido a scacchi!"></textarea>
+
+    <button onclick="invia()">Invia</button>
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    let senderId = null;
+
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const feedback = document.getElementById('login-feedback');
+
+      if (!username || !password) {
+        feedback.textContent = 'Compila username e password.';
+        return;
+      }
+
+      const res = await fetch('http://localhost:8080/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (!res.ok) {
+        feedback.textContent = 'Login fallito. Controlla le credenziali.';
+        return;
+      }
+
+      const meRes = await fetch('http://localhost:8080/api/users/me', {
+        credentials: 'include'
+      });
+      const me = await meRes.json();
+      senderId = me.id;
+
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('main-section').style.display = 'block';
+    }
+
+    async function invia() {
+      const userId      = document.getElementById('userId').value;
+      const title       = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const feedback    = document.getElementById('feedback');
+
+      if (!userId || !title || !description) {
+        feedback.style.color = 'red';
+        feedback.textContent = 'Compila tutti i campi.';
+        return;
+      }
+
+      const res = await fetch('http://localhost:8080/api/notifications/', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id_user: parseInt(userId),
+          id_sender: senderId,
+          title,
+          description
+        })
+      });
+
+      if (res.ok) {
+        feedback.style.color = 'green';
+        feedback.textContent = 'Notifica inviata!';
+      } else {
+        feedback.style.color = 'red';
+        feedback.textContent = 'Errore nell\'invio.';
+      }
+    }
+  </script>
+</body>
+</html>

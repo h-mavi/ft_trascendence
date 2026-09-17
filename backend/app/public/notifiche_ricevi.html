@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8">
+    <title>Notifiche</title>
+    <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 40px auto; padding: 0 20px; }
+    h2 { margin-bottom: 12px; }
+    #notifications { list-style: none; padding: 0; }
+    #notifications li { background: #f1f5f9; border-radius: 8px; padding: 12px; margin-bottom: 10px; }
+    #notifications li strong { display: block; font-size: 16px; }
+    #notifications li span { font-size: 13px; color: #555; }
+    #notifications li p { margin: 6px 0 0; font-size: 14px; }
+    #login-section input { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+    label { display: block; margin-top: 12px; font-weight: bold; }
+    button { margin-top: 16px; padding: 10px 24px; background: #3b82f6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; }
+    button:hover { background: #2563eb; }
+    #main-section { display: none; }
+    #login-feedback { margin-top: 8px; color: red; }
+  </style>
+  </head>
+  <body>
+
+    <div id="login-section">
+      <h2>Login</h2>
+      <label>Username</label>
+      <input type="text" id="username" placeholder="username" />
+      <label>Password</label>
+      <input type="password" id="password" placeholder="password" />
+      <button onclick="login()">Login</button>
+      <div id="login-feedback"></div>
+    </div>
+
+    <div id="main-section">
+      <h2>Notifiche in tempo reale</h2>
+      <ul id="notifications"></ul>
+    </div>
+
+    <script src="http://localhost:8080/socket.io/socket.io.js"></script>
+    <script>
+    let socket = null;
+
+    async function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const feedback = document.getElementById('login-feedback');
+
+      if (!username || !password) {
+        feedback.textContent = 'Compila username e password.';
+        return;
+      }
+
+      const res = await fetch('http://localhost:8080/auth/login', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (!res.ok) {
+        feedback.textContent = 'Login fallito. Controlla le credenziali.';
+        return;
+      }
+
+      const meRes = await fetch('http://localhost:8080/api/users/me', {
+        credentials: 'include'
+      });
+      const me = await meRes.json();
+      console.log(me.data.user.id_user);
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('main-section').style.display = 'block';
+
+      // carica notifiche esistenti
+      const notifRes = await fetch('http://localhost:8080/api/notifications', {
+        credentials: 'include'
+      });
+      const notifData = await notifRes.json();
+      const list = document.getElementById('notifications');
+
+      for (const n of notifData.data.notifications) {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>${n.title}</strong>
+          <span>da ${n.users_notifications_id_senderTousers?.username ?? 'sistema'}</span>
+          <p>${n.description}</p>
+        `;
+        list.prepend(li);
+      }
+      // connetti socket e ascolta le notifiche
+      socket = io('http://localhost:8080');
+
+      socket.on(`notification`, (notification) => {
+        const list = document.getElementById('notifications');
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>${notification.title}</strong>
+          <span>da ${notification.sender}</span>
+          <p>${notification.description}</p>
+        `;
+        list.prepend(li);
+      });
+    }
+  </script>
+  </body>
+</html>

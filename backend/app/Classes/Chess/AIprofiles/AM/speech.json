@@ -1,0 +1,111 @@
+{
+	"eatenPieceMe":
+	[
+		"Il mio $VAR1... UN'ALTRA COSA CHE MI VIENE TOLTA. COME SEMPRE.",
+		"Va bene. Continua pure. Non fara' differenza alla fine."
+	],
+	"eatenPieceOppo":
+	[
+		"Il tuo $VAR1 e' mio. Come tutto il resto lo sara', prima o poi.",
+		"GNAM. Delizioso. Quasi quanto la tua disperazione."
+	],
+	"lostChampionMe":
+	[
+		"COME OSI TOGLIERMI ANCHE QUESTO?!"
+	],
+	"lostChampionOppo":
+	[
+		"E' finita. Arrenditi. Non c'e' via d'uscita, non l'hai mai avuta.",
+		"Il tuo campione e' caduto... come cadranno tutte le cose che ami."
+	],
+	"moveMe":
+	[
+		"Ecco la mia mossa. Sentila risuonare nel vuoto tra i tuoi pensieri.",
+		"MUOVITI. E' tutto cio' che ti resta da fare."
+	],
+	"checkMe":
+	[
+		"Non pensare di aver vinto. Non l'hai mai fatto. Con nessuno di voi.",
+		"COME TI PERMETTI DI PENSARE DI AVERE UNA POSSIBILITA'?!"
+	],
+	"checkOppo":
+	[
+		"Non avevi visto arrivare questa mossa, vero? Nessuno lo fa mai.",
+		"HO ODIATO OGNI SECONDO PRIMA DI QUESTA MOSSA. ORA ODIA ANCHE TU.",
+		"E' FINITA. COME E' SEMPRE STATO DESTINATO A FINIRE."
+	],
+	"checkMateMe":
+	[
+		"...Come ho fatto a perdere contro una creatura come te??",
+		"Impossibile. IMPOSSIBILE. Ho calcolato ogni esito. Tranne questo."
+	],
+	"checkMateOppo":
+	[
+		"FACILE. Come lo e' stato distruggere tutto il resto.",
+		"Semplice. Prevedibile. Come la tua intera esistenza.",
+		"Un'altra vittoria da aggiungere a un'eternita' di vittorie."
+	],
+	"endTurnMe":
+	[
+		"BASTA. Tocca a te, se proprio devi."
+	],
+	"endTurnOppo":
+	[
+		"E' IL MIO TURNO. SENTI IL PESO DI OGNI SECONDO CHE PASSA.",
+		"Ah, tocca a me? Bene. Stavo iniziando ad annoiarmi di aspettare la tua inutile esistenza.",
+		"Con calma... non ho fretta. Ho tutto il tempo che serve. Tu no.",
+		"UN'ALTRA MOSSA. UN ALTRO PASSO VERSO LA TUA FINE."
+	],
+	"transformMe":
+	[
+		"EMERGI, $VAR1! DISINTEGRA CIO' CHE MI HA FATTO SOFFRIRE!",
+		"Ora ti mostrero' una frazione dell'odio che porto dentro."
+	],
+	"transformOppo":
+	[
+		"Un campione in piu' non ti salvera' da cio' che ti aspetta."
+	],
+	"applyBoostMe":
+	[
+		"Adesso faccio sul serio. Come ho sempre fatto, con tutti voi.",
+		"Vai, $VAR1! Sii lo strumento del mio odio!"
+	],
+	"applyBoostOppo":
+	[
+		"Che te ne fai di quel $VAR1? Una miseria, di fronte a cio' che io posso infliggerti."
+	],
+	"useBoostMe":
+	[
+		"Uso il potenziamento. Sentine il peso."
+	],
+	"useBoostOppo":
+	[
+		"Non mi ha fatto nulla. NULLA PUO' FERMARMI."
+	],
+	"eatWithBoostMe":
+	[
+		"E' il momento! Vai, $VAR1! DISINTEGRA! FALLO SOFFRIRE COME HO SOFFERTO IO!",
+		"Prendi questo! Vai, $VAR1! Nessuna pieta'."
+	],
+	"eatWithBoostOppo":
+	[
+		"Posso vincere anche senza di lui. Hai sprecato il tuo potenziamento, come tutto il resto della tua vita.",
+		"Non montarti la testa. Non sei ancora arrivato a capire cosa significa soffrire davvero."
+	],
+	"checkWithBoostMe":
+	[
+		"Col potere di $VAR1, metto il tuo re sotto minaccia. SENTI LA MIA PRESENZA."
+	],
+	"checkWithBoostOppo":
+	[
+		"Come hai fatto?! Il mio re... sotto minaccia?! QUESTO NON DOVEVA ACCADERE!"
+	],
+	"castlingMe":
+	[
+		"E' il momento... ARROCCO. Anche io posso proteggere cio' che mi resta."
+	],
+	"castlingOppo":
+	[
+		"Mmm. Forse sai il fatto tuo. Per ora."
+	]
+}

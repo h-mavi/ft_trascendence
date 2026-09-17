@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "noEmit": true,
+    "module": "commonJS",
+    "types": ["node"],
+    "skipLibCheck": true,
+    "paths": {
+      "@prisma/client": ["./generated/prisma"]
+    },
+    "checkJs": false,
+    "allowJs": true
+  },
+  "include": ["**/*.js", "**/*.ts"],
+  "exclude": ["node_modules", "generated"]
+
+}

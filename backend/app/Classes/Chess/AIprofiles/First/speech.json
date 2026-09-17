@@ -1,0 +1,130 @@
+{
+	"eatenPieceMe": 
+	[
+		"NOOOO! il mio $VAR1!",
+		"non gasarti troppo adesso"
+	],
+	"eatenPieceOppo": 
+	[
+		"bono il $VAR1, grazie",
+		"gnam gnam"
+	],
+	"lostChampionMe":
+	[
+		"COME OSI!"
+	],
+	"lostChampionOppo":
+	[
+		"e finita. Arrenditi. ",
+		"il tuo campione e caduto.. e presto lo sara anche il tuo re."
+	],
+	"moveMe":
+	[
+		"Ecco qua!",
+		"MOVIMENTO"
+	],
+	"checkMe": 
+	[
+		"non pensare di aver vinto",
+		"AH SI?? COME TI PERMETTI?!"
+	],
+	"checkOppo": 
+	[
+		"non avevi visto questa mossa, eh?",
+		"THUNDER CROSS SPLIT ATTACK!",
+		"E FINITA JOTARO!"
+	],
+	"checkMateMe": 
+	[
+		"... Come ho fatto a perdere contro di te??",
+		"non pensare di aver vinto! ...cosa? ho perso?? Impossibile!"
+	],
+	"checkMateOppo": 
+	[
+		"EZ.",
+		"EAZY.",
+		"easy.",
+		"izy."
+	],
+	"endTurnMe":
+	[
+		"PASSO."
+	],
+	"endTurnOppo":
+	[
+		"IT'S MY TURN! I DRAW A CARD!",
+		"ah, tocca a me? Menomale, mi stavo addormentando!",
+		"con calma eh... disgraziato, non ho tutto il giorno",
+		"PESCATA LUCENTE!"
+	],
+	"transformMe":
+	[
+		"EMERGI, $VAR1! DISINTEGRA I TUOI NEMICI!",
+		"adesso ti faccio vedere io."
+	],
+	"transformOppo":
+	[
+		"un campione in piu non ti fara vincere"
+	],
+	"applyBoostMe": 
+	[
+		"adesso faccio sul serio!",
+		"Beccati questo! Vai, $VAR1!"
+	],
+	"applyBoostOppo": 
+	[
+		"Che te ne fai di quel $VAR1? Non farmi perdere tempo!"
+	],
+	"useBoostMe": 
+	[
+		"Uso il potenziamento."
+	],
+	"useBoostOppo": 
+	[
+		"Non mi ha fatto nulla!"
+	],
+	"eatWithBoostMe": 
+	[
+		"E il momento! Vai, $VAR1! DISINTEGRA!",
+		"Prendi questo! vai, $VAR1!"
+	],
+	"eatWithBoostOppo": 
+	[
+		"Posso vincere anche senza di lui! Hai sprecato il potenziamento!",
+		"Mmm. Non ti montare la testa."
+	],
+	"checkWithBoostMe": 
+	[
+		"Col potere di $VAR1, metto il tuo re sotto minaccia!"
+	],
+	"checkWithBoostOppo": 
+	[
+		"Come hai fatto?? Il mio re.. Sotto minaccia?!"
+	],
+	"castlingMe": 
+	[
+		"E il momento.. CASTLING!"
+	],
+	"castlingOppo": 
+	[
+		"Mmm. Forse sai il fatto tuo.."
+	],
+	"draw":
+	[
+		"Io? Alla pari con te? Inaccettabile."
+	],
+	"offerDraw":
+	[
+		"P-propongo un pareggio. Non che sia in difficolta o cose del genere"
+	],
+	"acceptDraw":
+	[
+		"E va bene. Tanto non avevo piu voglia."
+	],
+	"declineDraw":
+	[
+		"Certo che si pareggia! Aspetta premo il pulsantino.. EEEEH VOLEVI! GUARDA CHE FACCIA, NON SE LO ASPETTAVA!",
+		"HAHAHAHAH! no.",
+		"Dimmi, tu sanguini? GRONDERAI."
+	]
+}

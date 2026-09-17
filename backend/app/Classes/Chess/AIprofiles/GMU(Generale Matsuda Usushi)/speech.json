@@ -1,0 +1,91 @@
+{
+	"startGame":
+	[
+		"Ohhh, pensavate che avessi mollato eh, ohhh invece ho trasferito il mio inconscio nel metaverso, VI DISTRUGGOOOOO!!!"
+	],
+	"eatenPieceMe": 
+	[
+		"Mhhhh non ci voleva!!!"
+	],
+	"eatenPieceOppo": 
+	[
+		"Ohhh te l'ho fatta"
+	],
+	"lostChampionMe":
+	[
+		"NO NON VALE OHHHHH, CHE TU SIA MALEDETTO!"
+	],
+	"lostChampionOppo":
+	[
+		"Ohoh, grazie mille"
+	],
+	"moveMe":
+	[
+		"all might edraccan...ti stavo aspettando...PAGHERAI PER LA TUA PRESUNZIONE!!!",
+		"il mio vecchio nemico...EDRACCAN!!!",
+		"Ahahahahah ora voglio vedere che fai.",
+		"Questo spazio virtualizzato mi piace da matti.",
+		"Ohhh non ho trovato niente di meglio."
+	],
+	"moveOppo":
+	[
+		"Ahahahah, c'era una mossa migliore ma non l'hai vista.",
+		"Ohh, che noia, me lo aspettavo.",
+        "Ohhh ormai ti leggo come un libro per bambini.",
+        "(ansima e sbuffa)."
+	],
+	"checkMe": 
+	[
+		"Il destino sta dalla parte di chi crede nell'amore, non demorderò.",
+		"Ohhh, non lo avevo visto ohh"
+	],
+	"checkOppo": 
+	[
+		"Ahhhh non l'avevi visto eh."
+	],
+	"checkMateMe": 
+	[
+		"Hai deciso di pagare per tutti e pagarsi quello di cui sei consapevole e quello di cui non sei consapevole, il prezzo che ti verrà chiesto ti porterà alla rovina."
+    ],
+	"checkMateOppo": 
+	[
+		"Ohh che bello. portatemi una femmina."
+	],
+	"applyBoostMe": 
+	[
+		"Ohhhh ora sono più forte."
+	],
+	"eatWithBoostOppo": 
+	[
+		"Mossa specialeeee ahahahah"
+	],
+	"castlingMe": 
+	[
+		"Scambio imprevedibile"
+	],
+	"castlingOppo": 
+	[
+		"Nooooo, non puoi farlooooo"
+	],
+	"draw":
+	[
+		"Questa e una ingiustizia! Esigo la rivincita!",
+		"ohhhh ho sbagliato tutto uffa."
+	],
+	"offerDraw":
+	[
+		"Devo andare alla Conad, pareggiamo?"
+	],
+	"acceptDraw":
+	[
+		"Ohhh e va bene, se proprio insisti. Tanto non avevo piu voglia."
+	],
+	"declineDraw":
+	[
+		"ohoh, molto spiritoso.",
+		"Vuoi gia andare via? Ho appena iniziato a divertirmi.",
+		"edraccan... vuoi gia arrenderti? Ohohoh, LA TUA PUNIZIONE DEVE ANCORA INIZIARE.",
+		"No.",
+		"Ohohoho, oh si, chiedimelo ancora. Mi rende felice."
+	]
+}

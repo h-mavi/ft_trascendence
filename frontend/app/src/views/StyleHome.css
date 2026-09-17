@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+/*ANCHOR - Theme*/
+@theme {
+	--color-bg-default: var(--current-bg-default);
+	--color-border-default: #4e4e4e8c;
+	--color-bg-second: var(--current-bg-second);
+	--color-border-second: var(--current-border-second);
+	--color-bg-darker: var(--current-bg-darker);
+	--color-text-default: white;
+	--color-text-second: var(--color-zinc-300);
+	--color-text-third: var(--color-zinc-500);
+	--color-text-last: #4e4e4e8c;
+	--color-form-icon: #dcdfe4c0;
+
+	--color-bg-square: var(--current-bg-square);
+	--color-bg-WSquare: #CCCCCC;
+	--color-bg-WSelect: var(--current-bg-WSelect);
+	--color-bg-BSelect: var(--current-bg-BSelect);
+	--color-bg-highlight: var(--current-bg-highlight);
+	--color-bg-historyM: var(--current-bg-historyM);
+
+	--color-notif-on: #c41c1c;
+	--color-online-accept: var(--color-green-500);
+	--color-bg-blur: #00000033;
+	--color-main-color: var(--current-main-color);
+	--color-light-button: var(--current-light-button);
+	--color-active-button: var(--current-active-button);
+
+	--color-bg-error: var(--current-bg-error);
+	--color-text-error: var(--current-text-error);
+	--color-border-error: var(--current-border-error);
+	--color-inset-error: var(--current-inset-error);
+
+	--color-text-win-open: var(--color-green-600);
+	--color-bg-win: color-mix(in srgb, var(--color-green-50) 90%, transparent);
+	--color-text-lose-closed: var(--color-red-500);
+	--color-bg-lose: color-mix(in srgb, var(--color-red-50) 90%, transparent);
+	--color-text-draw-await: var(--color-gray-300);
+	--color-bg-draw: color-mix(in srgb, var(--color-gray-300) 90%, transparent);
+	--color-bg-await: color-mix(in srgb, var(--color-gray-200) 10%, transparent);
+	--color-inset-await: color-mix(in srgb, var(--color-gray-300) 20%, transparent);
+
+	--color-bg-tour-friend: color-mix(in srgb, var(--color-blue-400) 10%, transparent);
+	--color-text-tour-friend: var(--color-blue-200);
+	--color-inset-tour-friend: color-mix(in srgb, var(--color-blue-500) 20%, transparent);
+	--color-hover-tour: color-mix(in srgb, var(--color-blue-400) 20%, transparent);
+
+	--color-bg-accept: color-mix(in srgb, var(--color-green-400) 10%, transparent);
+	--color-inset-accept: color-mix(in srgb, var(--color-green-500) 20%, transparent);
+	--color-bg-reject: color-mix(in srgb, var(--color-red-400) 10%, transparent);
+	--color-inset-reject: color-mix(in srgb, var(--color-red-500) 20%, transparent);
+}
+
+
+/*SECTION - Dark-Themes*/
+
+/*ANCHOR - DarkRed*/
+:root,
+[data-theme="DarkRed"] {
+--current-bg-default: #201e1c;
+--current-bg-second: #302d2a;
+--current-border-second: #181715e8;
+--current-bg-darker: #181715;
+
+--current-bg-square: #200E0E;
+--current-bg-WSelect: #bb4232;
+--current-bg-BSelect: #801a12;
+--current-bg-highlight: #a52a2a;
+--current-bg-historyM: #ffb2942e;
+
+--current-main-color: #882a2a;
+--current-light-button: #af3d3d;
+--current-active-button: #d1aaaa;
+
+--current-bg-error: #2f1818cc;																/*[#2f1818]/80*/
+--current-text-error: var(--color-red-100);													/*#ffe2e2*/
+--current-border-error: color-mix(in srgb, var(--color-red-800) 10%, transparent);			/*#9f07111a*/
+--current-inset-error: color-mix(in srgb, var(--color-red-500) 20%, transparent);			/*#fb2c3633*/ /*NOTE - inset-recect e' ugule ma non li fondo perche' le altre palette hanno error diverso e reject uguale a Dark-Red. Devo quindi metterli a mano nelle posizioni giuste.*/
+}
+
+/*ANCHOR - DarkBlue*/
+[data-theme="DarkBlue"] {
+--current-bg-default: #1d1d21;
+--current-bg-second: #2a2b30;
+--current-border-second: #16161ae8;
+--current-bg-darker: #16161a;
+
+--current-bg-square: #0B151A;
+--current-bg-WSelect: #3E93CC;
+--current-bg-BSelect: #176AA1;
+--current-bg-highlight: #2C75A5;
+--current-bg-historyM: #94CDFF2E;
+
+--current-main-color: #2a6287;
+--current-light-button: #3e82b0;
+--current-active-button: #a9c9de;
+
+--current-bg-error: #17252ecc;
+--current-text-error: var(--color-blue-100);
+--current-border-error: color-mix(in srgb, var(--color-blue-800) 10%, transparent);
+--current-inset-error: color-mix(in srgb, var(--color-blue-500) 20%, transparent);
+}
+
+/*ANCHOR - DarkGreen*/
+[data-theme="DarkGreen"] {
+--current-bg-default: #1d211f;
+--current-bg-second: #2a302d;
+--current-border-second: #161917e8;
+--current-bg-darker: #161917;
+
+--current-bg-square: #011B00;
+--current-bg-WSelect: #37BB32;
+--current-bg-BSelect: #168012;
+--current-bg-highlight: #2EA52A;
+--current-bg-historyM: #94FF942E;
+
+--current-main-color: #2d872a;
+--current-light-button: #41b03e;
+--current-active-button: #aadba8;
+
+--current-bg-error: #182e17cc;
+--current-text-error: var(--color-green-100);
+--current-border-error: color-mix(in srgb, var(--color-green-800) 10%, transparent);
+--current-inset-error: color-mix(in srgb, var(--color-green-500) 20%, transparent);
+}
+
+/*ANCHOR - DarkYellow*/
+[data-theme="DarkYellow"] {
+--current-bg-default: #20211d;
+--current-bg-second: #2f302a;
+--current-border-second: #181916e8;
+--current-bg-darker: #181916;
+
+--current-bg-square: #1B1400;
+--current-bg-WSelect: #BB9B32;
+--current-bg-BSelect: #806412;
+--current-bg-highlight: #A5872A;
+--current-bg-historyM: #FFF4942E;
+
+--current-main-color: #87712a;
+--current-light-button: #b0953e;
+--current-active-button: #dbcfa8;
+
+--current-bg-error: #2e2917cc;
+--current-text-error: var(--color-yellow-100);
+--current-border-error: color-mix(in srgb, var(--color-yellow-800) 10%, transparent);
+--current-inset-error: color-mix(in srgb, var(--color-yellow-500) 20%, transparent);
+}
+/*!SECTION */
+
+/*ANCHOR - Paletes*/
+/*
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 500 250" xml:space="preserve">
+    <rect fill="#201e1c" x="0" y="0" width="100" height="220"/>,<rect fill="#302d2a" x="100" y="0" width="100" height="220"/>,<rect fill="#2f1818" x="200" y="0" width="100" height="220"/>,<rect fill="#882a2a" x="300" y="0" width="100" height="220"/>,<rect fill="#af3d3d" x="400" y="0" width="100" height="220"/>
+    <text x="10" y="235" font-family="Arial" font-size="6" alignment-baseline="middle">Exported from Coolors.co</text>
+    <text x="490" y="235" font-family="Arial" font-size="6" alignment-baseline="middle" text-anchor="end">https://coolors.co/201e1c-302d2a-2f1818-882a2a-af3d3d</text>
+</svg>
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 500 250" xml:space="preserve">
+    <rect fill="#1d1d21" x="0" y="0" width="100" height="220"/>,<rect fill="#2a2b30" x="100" y="0" width="100" height="220"/>,<rect fill="#17252e" x="200" y="0" width="100" height="220"/>,<rect fill="#2a6287" x="300" y="0" width="100" height="220"/>,<rect fill="#3e82b0" x="400" y="0" width="100" height="220"/>
+    <text x="10" y="235" font-family="Arial" font-size="6" alignment-baseline="middle">Exported from Coolors.co</text>
+    <text x="490" y="235" font-family="Arial" font-size="6" alignment-baseline="middle" text-anchor="end">https://coolors.co/1d1d21-2a2b30-17252e-2a6287-3e82b0</text>
+</svg>
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 500 250" xml:space="preserve">
+    <rect fill="#1d211f" x="0" y="0" width="100" height="220"/>,<rect fill="#2a302d" x="100" y="0" width="100" height="220"/>,<rect fill="#182e17" x="200" y="0" width="100" height="220"/>,<rect fill="#2d872a" x="300" y="0" width="100" height="220"/>,<rect fill="#41b03e" x="400" y="0" width="100" height="220"/>
+    <text x="10" y="235" font-family="Arial" font-size="6" alignment-baseline="middle">Exported from Coolors.co</text>
+    <text x="490" y="235" font-family="Arial" font-size="6" alignment-baseline="middle" text-anchor="end">https://coolors.co/1d211f-2a302d-182e17-2d872a-41b03e</text>
+</svg>
+
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 500 250" xml:space="preserve">
+    <rect fill="#20211d" x="0" y="0" width="100" height="220"/>,<rect fill="#2f302a" x="100" y="0" width="100" height="220"/>,<rect fill="#2e2917" x="200" y="0" width="100" height="220"/>,<rect fill="#87712a" x="300" y="0" width="100" height="220"/>,<rect fill="#b0953e" x="400" y="0" width="100" height="220"/>
+    <text x="10" y="235" font-family="Arial" font-size="6" alignment-baseline="middle">Exported from Coolors.co</text>
+    <text x="490" y="235" font-family="Arial" font-size="6" alignment-baseline="middle" text-anchor="end">https://coolors.co/20211d-2f302a-2e2917-87712a-b0953e</text>
+</svg>
+*/

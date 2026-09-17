@@ -1,0 +1,37 @@
+{
+  "name": "giorgio",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "g1": "cd ../../ ; ./setupTesting.sh run; cd -",
+    "g2": "clear;node --trace-uncaught src/scripts/testing/testerScript.js"
+  },
+  "dependencies": {
+    "@floating-ui/vue": "^1.1.11",
+    "@fontsource-variable/inter": "^5.2.8",
+    "pinia": "^3.0.4",
+    "socket.io-client": "^4.8.3",
+    "vue": "^3.5.31",
+    "vue-i18n": "^11.4.8",
+    "vue-router": "^5.0.6",
+    "vue-socket.io": "^3.0.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.2.2",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "eslint": "^10.6.0",
+    "eslint-plugin-vue": "^10.9.2",
+    "globals": "^17.7.0",
+    "tailwindcss": "^4.2.2",
+    "vite": "^8.0.3"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  }
+}

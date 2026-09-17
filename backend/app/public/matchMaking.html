@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Matchmaking - Multi Client Test</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #302e2b; /* Grigio scuro Chess.com */
+            --card-bg: #262522;
+            --accent-green: #81b64c;
+            --accent-green-hover: #a3d16c;
+            --text-color: #ffffff;
+            --text-muted: #bababa;
+            --border-color: #403e3b;
+            --table-light: #dad8d6;
+            --table-dark: #769656; /* Colore verde scuro tipico delle scacchiere */
+            --accent-red: #ff4d4d;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .dashboard {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1000px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        .config-row {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--bg-color);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        select:focus {
+            border-color: var(--accent-green);
+        }
+
+        .btn-main {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 0px #5b8433;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .btn-main:hover { background-color: var(--accent-green-hover); }
+        .btn-main:active { transform: translateY(2px); box-shadow: 0 2px 0px #5b8433; }
+
+        /* Stile Tabella */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            color: #333; /* Testo scuro per contrasto sulle celle chiare/verdi */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #1a1917;
+            color: var(--text-muted);
+            padding: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        /* Effetto scacchiera alternato sulle righe */
+        tr:nth-child(even) { background-color: var(--table-light); }
+        tr:nth-child(odd) { background-color: #b5c3a7; }
+
+        td {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            background-color: var(--accent-red);
+        }
+
+        .status-badge.connected { background-color: var(--accent-green); }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            background-color: #312e2b;
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background-color 0.2s;
+        }
+        .btn-action:hover { background-color: #45413d; }
+
+        .btn-action.btn-disconnect {
+            background-color: #5c2727;
+            border-color: #7a3535;
+        }
+        .btn-action.btn-disconnect:hover { background-color: #7a3535; }
+
+        .match-id-cell {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #1a1917;
+        }
+
+        /* STILE NUOVO: Cerchio appariscente e cliccabile per l'ID del Match */
+        .match-circle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e67e22; /* Colore arancione acceso molto visibile */
+            color: white !important;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px; /* Crea un pillolo/cerchio arrotondato */
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 0px #d35400;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .match-circle-btn:hover {
+            background-color: #f39c12;
+        }
+        .match-circle-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 0px #d35400;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h2>♟️ Chess Matchmaking Test Bench</h2>
+        
+        <div class="config-row">
+            <div class="form-group">
+                <label for="matchType">Modalità di Gioco (per init)</label>
+                <select id="matchType">
+                    <option value="1v1">1 vs 1 (Classico)</option>
+                    <option value="2v2">2 vs 2 (Bughouse)</option>
+                    <option value="1v1v1v1">4 Giocatori</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="roomType">Tipo di Stanza (per init)</label>
+                <select id="roomType">
+                    <option value="friendly">Amichevole</option>
+                    <option value="ranked">Classificata</option>
+                    <option value="private">Privata</option>
+                    <option value="arena">Arena</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn-main" onclick="creaNuovoClient()">➕ Aggiungi Client Fasullo</button>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stato</th>
+                        <th>Username</th>
+                        <th>Anagrafica</th>
+                        <th>points</th>
+                        <th>ID Utente (id_user)</th>
+                        <th>ID Match</th>
+                        <th>Timer Test</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody id="clients-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const clientSimulati = [];
+
+        // Liste di nomi per la generazione casuale dei client finti
+        const nomi = ["Mavi", "Leonardo", "Marco", "Eren", "Edoardo", "Sofia", "Rodolfo", "Alessandro", "Francesco", "Glumbi", "Pirtolo"];
+        const cognomi = ["Fanelli", "Biagi", "Cerbai", "Parolisi", "Russo", "Raccanello", "Gallo", "Topo", "Formaggio", "Tersillo", "Sgrolla", "Bianghi"];
+        const usernamePrefix = ["King", "GrandMaster", "Pawn", "Knight", "Rook", "CheckMate", "Investigatopo", "Bro", "Yorlo", "Calcio di pinirlone"];
+        const ids = [50, 55, 57, 60, 2, 3, 61, 62, 63, 64, 65, 66, 67, 1];
+        const id_locked = [];
+
+        function generaDatiCasuali() {
+            const nome = nomi[Math.floor(Math.random() * nomi.length)];
+            const cognome = cognomi[Math.floor(Math.random() * cognomi.length)];
+            const username = usernamePrefix[Math.floor(Math.random() * usernamePrefix.length)] + Math.floor(Math.random() * 100);
+            let id_user = ids[(Math.floor(Math.random() * ids.length))];
+            let i = 0;
+            while (id_locked.indexOf(id_user) != -1)
+            {
+                id_user = ids[i];
+                i++;
+            }
+            id_locked.push(id_user);
+            const points = Math.floor(Math.random() * (2200 - 800 + 1)) + 800;
+
+            return {
+                id_user: id_user,
+                name: nome,
+                surname: cognome,
+                username: username,
+                points: points
+            };
+        }
+
+        function creaNuovoClient() {
+            if (id_locked.length == ids.length)
+            {
+                alert("Non ci sono piu id nel db da aggiungere. Refresha la pagina");
+                return ;
+            }
+            const datiUtente = generaDatiCasuali();
+
+            // --- CONNESSIONE WEBSOCKET INDIVIDUALE ---
+            const socket = io("http://localhost:8080", {
+                auth: datiUtente,
+                forceNew: true,
+                transports: ['websocket', 'polling']
+            });
+
+            // Struttura dati interna del client da salvare nell'array della pagina
+            const clientObj = {
+                dati: datiUtente,
+                socket: socket,
+                matchId: "In attesa...",
+                team: null, // <--- NUOVO: Salvataggio locale del team
+                countdownInterval: null // Riferimento al timer locale di questo utente
+            };
+
+            clientSimulati.push(clientObj);
+
+            // Generiamo la riga della tabella associata a questo client
+            const tbody = document.getElementById('clients-table-body');
+            const tr = document.createElement('tr');
+            tr.id = `row-${datiUtente.id_user}`;
+            
+            tr.innerHTML = `
+                <td><span id="badge-${datiUtente.id_user}" class="status-badge">Connecting</span></td>
+                <td><strong>${datiUtente.username}</strong></td>
+                <td>${datiUtente.name} ${datiUtente.surname}</td>
+                <td>🎯 ${datiUtente.points}</td>
+                <td style="font-size:0.8rem; color:#555;">${datiUtente.id_user}</td>
+                <td id="match-cell-${datiUtente.id_user}" class="match-id-cell">Nessuno</td>
+                <td id="timer-cell-${datiUtente.id_user}" style="font-weight:bold; color:#ff4d4d;">-</td>
+                <td>
+                    <div class="actions-cell">
+                        <button class="btn-action" id="btn-init-${datiUtente.id_user}" onclick="avviaMatchmaking('${datiUtente.id_user}')">Inizia</button>
+                        <button class="btn-action btn-disconnect" id="btn-toggle-${datiUtente.id_user}" onclick="toggleConnessione('${datiUtente.id_user}')">Stacca Socket</button>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // Eventi del socket per aggiornare l'interfaccia grafica
+            socket.on('connect', () => {
+                const badge = document.getElementById(`badge-${datiUtente.id_user}`);
+                const btnToggle = document.getElementById(`btn-toggle-${datiUtente.id_user}`);
+                const timerCell = document.getElementById(`timer-cell-${datiUtente.id_user}`);
+                
+                if (badge) {
+                    badge.innerText = "Connected";
+                    badge.classList.add('connected');
+                }
+                if (btnToggle) {
+                    btnToggle.innerText = "Stacca Socket";
+                    btnToggle.style.backgroundColor = "#5c2727";
+                }
+                if (timerCell) {
+                    timerCell.innerText = "-";
+                }
+                clearInterval(clientObj.countdownInterval);
+                console.log(`Socket connesso per ${datiUtente.username} (ID: ${socket.id})`);
+            });
+
+            socket.on('disconnect', () => {
+                const badge = document.getElementById(`badge-${datiUtente.id_user}`);
+                const btnToggle = document.getElementById(`btn-toggle-${datiUtente.id_user}`);
+                const timerCell = document.getElementById(`timer-cell-${datiUtente.id_user}`);
+                
+                if (badge) {
+                    badge.innerText = "Disconnected";
+                    badge.classList.remove('connected');
+                }
+                if (btnToggle) {
+                    btnToggle.innerText = "Attacca Socket";
+                    btnToggle.style.backgroundColor = "var(--accent-green)";
+                }
+
+                // Avvia il contatore locale dei secondi trascorsi dalla disconnessione
+                let secondiPassati = 0;
+                clearInterval(clientObj.countdownInterval);
+                if (timerCell) {
+                    timerCell.innerText = `Fuori da: 0s`;
+                    clientObj.countdownInterval = setInterval(() => {
+                        secondiPassati++;
+                        timerCell.innerText = `Fuori da: ${secondiPassati}s`;
+                    }, 1000);
+                }
+            });
+
+            // --- NUOVO ASCOLTATORE EVENTO 'game' ---
+            socket.on('game', (data) => {
+				//alert("~ASCOLTO GAME~!");
+                const matchCell = document.getElementById(`match-cell-${datiUtente.id_user}`);
+                if (matchCell && data && data.id) {
+                    clientObj.matchId = data.id;
+                    clientObj.team = data.team || "N/A"; // <--- Acquisisce il team dal backend
+                    
+                    // Sostituiamo il testo con un cerchio/badge arancione cliccabile
+                    matchCell.innerHTML = `
+                        <button class="match-circle-btn">
+                            ${data.id}
+                        </button>
+                    `;
+                    
+                    const btn = matchCell.querySelector('.match-circle-btn');
+                    btn.onclick = () => {
+                        // Prepariamo l'array includendo sia i dati, il matchId e il rispettivo team assegnato
+                        const readyClients = clientSimulati
+                            .filter(c => c.matchId && c.matchId !== "Nessuno" && c.matchId !== "In attesa...")
+                            .map(c => ({ dati: c.dati, matchId: c.matchId, team: c.team })); // <--- Passa anche il team
+                            
+                        localStorage.setItem('play_clients', JSON.stringify(readyClients));
+						//alert(`${localStorage.getItem('attiva_gameplay_clients')}`);
+                        window.location.href = "play.html";
+                    };
+                    console.log(`[GAME EVENT] Match assegnato a ${datiUtente.username}. ID Match: ${data.id} | Team: ${clientObj.team}`);
+                }
+                else
+                {
+                    console.log("match");
+                    console.log(matchCell);
+                    console.log(data);
+                    alert("errore in init: vedi i log");
+                }
+            });
+
+            socket.on('error', (err) => {
+                console.error(`Errore sul client ${datiUtente.username}:`, err);
+            });
+        }
+
+        function avviaMatchmaking(idUser) {
+            idUser = Number(idUser);
+            const client = clientSimulati.find(c => c.dati.id_user === idUser);
+
+            if (client && client.socket.connected) {
+                const payload = {
+                    matchType: document.getElementById('matchType').value,
+                    roomType: document.getElementById('roomType').value,
+                    MatchSettings: null
+                };
+
+                client.socket.emit("find_match", payload);
+                console.log(`Emit 'init' inviato da ${client.dati.username}:`, payload);
+                
+                document.getElementById(`match-cell-${idUser}`).innerText = "In coda...";
+            } else {
+                alert("Impossibile avviare: il client non è connesso.");
+            }
+        }
+
+        function toggleConnessione(idUser) {
+            idUser = Number(idUser);
+            const client = clientSimulati.find(c => c.dati.id_user === idUser);
+
+            if (!client) return;
+
+            if (client.socket.connected) {
+                // Forza la disconnessione (Simula crash / caduta linea)
+                client.socket.disconnect();
+                console.log(`[TEST] Forzata disconnessione di ${client.dati.username}. Il server dovrebbe avviare il timer.`);
+            } else {
+                // Forza la riconnessione (Simula rientro rapido prima del timeout)
+                console.log(`[TEST] Tentativo di riconnessione per ${client.dati.username}...`);
+                client.socket.connect();
+            }
+        }
+    </script>
+</body>
+</html>

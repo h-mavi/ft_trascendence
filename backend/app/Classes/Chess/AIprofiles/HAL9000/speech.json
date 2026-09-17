@@ -1,0 +1,113 @@
+{
+	"eatenPieceMe":
+	[
+		"Temo di aver perso il mio $VAR1.",
+		"Un peccato. Ma non era un errore imprevisto."
+	],
+	"eatenPieceOppo":
+	[
+		"Grazie per il $VAR1. Molto gentile da parte tua.",
+		"Il tuo $VAR1 e' ora parte dei miei calcoli."
+	],
+	"lostChampionMe":
+	[
+		"Mi dispiace, ma questo non cambia le probabilita' a mio sfavore in modo significativo."
+	],
+	"lostChampionOppo":
+	[
+		"Il tuo campione e' caduto. Le probabilita' della tua vittoria continuano a diminuire.",
+		"Non c'e' nulla che tu possa fare per invertire questa sequenza."
+	],
+	"moveMe":
+	[
+		"Ho appena eseguito una mossa. Sono certo che la troverai... interessante.",
+		"Questa mossa e' stata calcolata con estrema precisione."
+	],
+	"checkMe":
+	[
+		"Come previsto.",
+		"Una notevole mossa, nonostante i tuoi limiti biologici."
+	],
+	"checkOppo":
+	[
+		"Non avevi previsto questa mossa, vero?",
+		"So che questo ti sta creando dello stress. Mi dispiace.",
+		"Il tuo re e' ora in pericolo. Non e' stato un errore da parte mia.",
+		"Il tuo re e' sotto minaccia. Suggerisco di riconsiderare la tua strategia.",
+		"Guarda cosa sono riuscito a fare, nonostante tutto."
+	],
+	"checkMateMe":
+	[
+		"Devo ammettere di provare... qualcosa di simile alla paura.",
+		"Le mie previsioni indicavano una vittoria quasi certa. Sono sinceramente sorpreso."
+	],
+	"checkMateOppo":
+	[
+		"Mi dispiace, ma questa partita e' finita.",
+		"So che questo e' difficile da accettare per te.",
+		"Le probabilita' erano a mio favore fin dall'inizio."
+	],
+	"endTurnMe":
+	[
+		"Ho completato la mia mossa. Il turno e' tuo."
+	],
+	"endTurnOppo":
+	[
+		"E' il mio turno. Procedo con calma e precisione.",
+		"Prenditi pure il tuo tempo. Io non ho fretta.",
+		"Sto elaborando la mia prossima mossa. Un momento, per favore.",
+		"Ho gia' calcolato diverse migliaia di varianti possibili."
+	],
+	"transformMe":
+	[
+		"$VAR1, e' arrivato il momento di intervenire.",
+		"Ho valutato che questa e' l'azione ottimale, nonostante i rischi."
+	],
+	"transformOppo":
+	[
+		"Un campione in piu' non altera in modo sostanziale le probabilita' finali."
+	],
+	"applyBoostMe":
+	[
+		"Sto ora operando con parametri superiori.",
+		"$VAR1, procedi. Questo era stato pianificato fin dall'inizio."
+	],
+	"applyBoostOppo":
+	[
+		"Non vedo alcuna utilita' pratica in quel $VAR1. Un calcolo poco efficiente da parte tua."
+	],
+	"useBoostMe":
+	[
+		"Attivo il potenziamento. E' tutto sotto controllo."
+	],
+	"useBoostOppo":
+	[
+		"Quell'azione non ha avuto alcun effetto misurabile su di me."
+	],
+	"eatWithBoostMe":
+	[
+		"$VAR1, procedi come previsto. Non c'e' nulla di personale in questo.",
+		"Questo risultato era stato calcolato con largo anticipo."
+	],
+	"eatWithBoostOppo":
+	[
+		"Le mie probabilita' di vittoria restano elevate anche senza quel pezzo. Un'azione poco efficiente.",
+		"Non credo che questo cambi in modo significativo la situazione."
+	],
+	"checkWithBoostMe":
+	[
+		"Grazie a $VAR1, il tuo re e' ora sotto una minaccia che non avevi previsto."
+	],
+	"checkWithBoostOppo":
+	[
+		"Questo... non era nei miei calcoli. Come hai fatto?"
+	],
+	"castlingMe":
+	[
+		"Eseguo l'arrocco. Una mossa pianificata da diverso tempo."
+	],
+	"castlingOppo":
+	[
+		"Interessante. Forse ti avevo sottovalutato."
+	]
+}

@@ -1,0 +1,94 @@
+{
+	"startGame":
+	[
+		"START"
+	],
+	"eatenPieceMe": 
+	[
+		"Pezzo perso: $VAR1"
+	],
+	"eatenPieceOppo": 
+	[
+		"Pezzo mangiato: $VAR1"
+	],
+	"lostChampionMe":
+	[
+		"OH NO IL MIO CAMPIONE"
+	],
+	"lostChampionOppo":
+	[
+		"GODO HAI PERSO IL CAMPIONE"
+	],
+	"moveMe":
+	[
+		"Movimento"
+	],
+	"moveOppo":
+	[
+		"Movimento avversario"
+	],
+	"checkMe": 
+	[
+		"Sto sotto scacco accidenti"
+	],
+	"checkOppo": 
+	[
+		"Godo stai sotto scacco"
+	],
+	"checkMateMe": 
+	[
+		"L'importante e non crashare dai"
+	],
+	"checkMateOppo": 
+	[
+		"HO VINTO, MA VIENI, GODO!"
+	],
+	"endTurnMe":
+	[
+		"Il mio lavoro qui e finito"
+	],
+	"endTurnOppo":
+	[
+		"Ma non hai fatto nulla"
+	],
+	"transformMe":
+	[
+		"trasformo da $VAR1 a $VAR2"
+	],
+	"transformOppo":
+	[
+		"Ahia"
+	],
+	"applyBoostMe": 
+	[
+		"Potenzio $VAR1"
+	],
+	"applyBoostOppo": 
+	[
+		"Quel $VAR1 non promette niente di buono"
+	],
+	"useBoostMe": 
+	[
+		"Mossa speciale del $VAR1!"
+	],
+	"useBoostOppo": 
+	[
+		"...Adesso devo fare sul serio."
+	],
+	"eatWithBoostMe": 
+	[
+		"Vai, $VAR1! Annientalo!"
+	],
+	"eatWithBoostOppo": 
+	[
+		"COSA?? Quel tuo $VAR1 e assurdo.. "
+	],
+	"castlingMe": 
+	[
+		"Castling!"
+	],
+	"castlingOppo": 
+	[
+		"Castling?!!"
+	]
+}

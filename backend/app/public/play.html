@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Gameplay - Multi Client Test</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #302e2b;
+            --card-bg: #262522;
+            --accent-green: #81b64c;
+            --accent-green-hover: #a3d16c;
+            --text-color: #ffffff;
+            --text-muted: #bababa;
+            --border-color: #403e3b;
+            --table-light: #dad8d6;
+            --accent-red: #ff4d4d;
+            --accent-blue: #2980b9;
+            
+            /* Colori dei Team */
+            --team-white: #ffffff;
+            --team-black: #111111;
+            --team-yellow: #f1c40f;
+            --team-blue: #3498db;
+            --team-red: #e74c3c;
+            --team-green: #2ecc71;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .dashboard {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1300px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            color: #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #1a1917;
+            color: var(--text-muted);
+            padding: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) { background-color: var(--table-light); }
+        tr:nth-child(odd) { background-color: #b5c3a7; }
+
+        td {
+            padding: 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            background-color: var(--accent-red);
+        }
+
+        .status-badge.connected { background-color: var(--accent-green); }
+
+        .btn-action {
+            background-color: #312e2b;
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .btn-action:hover { background-color: #45413d; }
+        .btn-disconnect { background-color: #5c2727; }
+        .btn-disconnect:hover { background-color: #7a3535; }
+
+        .btn-draw {
+            background-color: #d35400;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .btn-draw:hover { background-color: #e67e22; }
+
+        .btn-reject {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .btn-reject:hover { background-color: #95a5a6; }
+
+        .game-controls {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+        }
+
+        .game-controls input[type="text"] {
+            width: 50px;
+            padding: 0.4rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .game-controls select {
+            padding: 0.4rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-weight: bold;
+        }
+
+        .btn-send {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-send:hover { background-color: #3498db; }
+
+        .response-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+        }
+        .res-ok { background-color: var(--accent-green); }
+        .res-err { background-color: var(--accent-red); }
+
+        .team-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+        .team-white { background-color: var(--team-white); color: #000; }
+        .team-black { background-color: var(--team-black); color: #fff; }
+        .team-yellow { background-color: var(--team-yellow); color: #000; }
+        .team-blue { background-color: var(--team-blue); color: #fff; }
+        .team-red { background-color: var(--team-red); color: #fff; }
+        .team-green { background-color: var(--team-green); color: #fff; }
+
+        #global-error-log {
+            width: 100%;
+            max-width: 1300px;
+            background-color: #5c2727;
+            border: 2px solid var(--accent-red);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-sizing: border-box;
+            display: none;
+        }
+        #global-error-log h3 { margin-top: 0; color: #ff4d4d; }
+        #error-list { padding-left: 1.2rem; margin: 0; color: #fff; }
+
+        /* --- STILI OVERLAY FINALE PARTITA --- */
+        .victory-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .victory-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .victory-card {
+            background: #262522;
+            border: 3px solid #81b64c;
+            border-radius: 16px;
+            padding: 2.5rem 3.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transform: scale(0.7);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .victory-modal-overlay.active .victory-card {
+            transform: scale(1);
+        }
+
+        .victory-card h1 {
+            font-size: 2.8rem;
+            margin: 0 0 1rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .victory-card p {
+            font-size: 1.2rem;
+            color: #bababa;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-modal-close {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-modal-close:hover { background-color: var(--accent-green-hover); }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h2>⚔️ Chess Gameplay Test Bench (Stanza Attiva)</h2>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stato</th>
+                        <th>Team</th>
+                        <th>Username (ID Match)</th>
+                        <th>points</th>
+                        <th>Invia Mossa ({from, to, type})</th>
+                        <th>Gestione Patta</th>
+                        <th>Ultimo Esito ON</th>
+                        <th>Timer Test</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody id="game-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="global-msg-log" style="width: 100%; max-width: 1300px; background-color: #262522; border: 2px solid var(--accent-blue); border-radius: 8px; padding: 1rem; margin-top: 1rem; box-sizing: border-box;">
+        <h3 style="margin-top: 0; color: var(--accent-blue);">💬 Game Messages</h3>
+        <ul id="msg-list" style="padding-left: 1.2rem; margin: 0; color: #fff;"></ul>
+    </div>
+
+    <div id="global-error-log">
+        <h3>🚨 Log Errori Ricevuti (status != 200)</h3>
+        <ul id="error-list"></ul>
+    </div>
+
+    <!-- MODAL FINALE PARTITA -->
+    <div id="victory-modal" class="victory-modal-overlay">
+        <div class="victory-card" id="victory-card-box">
+            <h1 id="victory-title">🤝 PARITÀ!</h1>
+            <p id="victory-subtext">La partita è terminata in patta.</p>
+            <button class="btn-modal-close" onclick="chiudiModalVittoria()">Chiudi</button>
+        </div>
+    </div>
+
+    <script>
+        const clientIniziali = JSON.parse(localStorage.getItem('play_clients')) || [];
+        const clientSimulati = [];
+        let lastEventType = "init";
+
+        const prioritaTeam = {
+            "white": 1, "black": 2,
+            "yellow": 3, "blue": 4, "red": 5, "green": 6,
+            "N/A": 99
+        };
+
+        clientIniziali.sort((a, b) => {
+            const teamA = (a.team || "N/A").toLowerCase();
+            const teamB = (b.team || "N/A").toLowerCase();
+            return (prioritaTeam[teamA] || 90) - (prioritaTeam[teamB] || 90);
+        });
+
+        if(clientIniziali.length === 0) {
+            document.getElementById('game-table-body').innerHTML = `<tr><td colspan="9" style="text-align:center; color:white; background:#262522; padding:2rem;">Nessun client in partita. Avvia un match dal Test Bench precedente.</td></tr>`;
+        } else {
+            clientIniziali.forEach(c => creaRigaClientGameplay(c.dati, c.matchId, c.team));
+        }
+
+        function creaRigaClientGameplay(datiUtente, matchId, teamName) {
+            const teamSicuro = teamName || "N/A";
+            
+            const socket = io("http://localhost:8080", {
+                auth: datiUtente,
+                forceNew: true,
+                transports: ['websocket', 'polling']
+            });
+
+            const clientObj = {
+                dati: datiUtente,
+                socket: socket,
+                matchId: matchId,
+                team: teamSicuro,
+                countdownInterval: null
+            };
+            clientSimulati.push(clientObj);
+
+            const tbody = document.getElementById('game-table-body');
+            const tr = document.createElement('tr');
+            tr.id = `row-${datiUtente.id_user}`;
+            
+            tr.innerHTML = `
+                <td><span id="badge-${datiUtente.id_user}" class="status-badge">Connecting</span></td>
+                <td><span class="team-badge team-${teamSicuro.toLowerCase()}">${teamSicuro}</span></td>
+                <td><strong>${datiUtente.username}</strong><br><small style="color:#444; font-family:monospace;">ID: ${datiUtente.id_user}</small></td>
+                <td>🎯 ${datiUtente.points}</td>
+                <td>
+                    <div class="game-controls">
+                        <input type="text" id="from-${datiUtente.id_user}" placeholder="e2" maxlength="4">
+                        <input type="text" id="to-${datiUtente.id_user}" placeholder="e4" maxlength="4">
+                        <select id="type-${datiUtente.id_user}">
+                            <option value="move">move</option>
+                            <option value="moveBoost">moveBoost</option>
+                            <option value="boost">boost</option>
+                            <option value="trans">transform</option>
+                            <option value="endTurn">endTurn</option>
+                            <option value="giveUp">giveUp💀</option>
+                        </select>
+                        <button class="btn-send" onclick="inviaMossa('${datiUtente.id_user}')">Invia</button>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn-draw" onclick="inviaDraw('${datiUtente.id_user}', true)">🤝 Patta</button>
+                    <button class="btn-reject" onclick="inviaDraw('${datiUtente.id_user}', false)">❌ Rifiuta</button>
+                </td>
+                <td id="esito-${datiUtente.id_user}">-</td>
+                <td id="timer-cell-${datiUtente.id_user}">-</td>
+                <td>
+                    <button class="btn-action btn-disconnect" id="btn-toggle-${datiUtente.id_user}" onclick="toggleConnessione('${datiUtente.id_user}')">Stacca Socket</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // --- LISTENERS WEBSOCKET UNIFICATO ("game") ---
+            socket.on("game", (data) => {
+                // Identifichiamo il tipo di evento (es. se data.type === "draw" oppure l'ultimo tipo inviato)
+                const currentEventType = (data && data.type) ? data.type : lastEventType;
+                
+                gestisciRispostaServer(datiUtente.id_user, currentEventType, data);
+
+                // Controllo se è presente un esito finale di partita
+                if (data && data.victory && data.victory !== "") {
+                    mostraModalVittoria(data.victory);
+                }
+            });
+
+            socket.on("gameMsg", (data) => {
+                const msgList = document.getElementById("msg-list");
+                const li = document.createElement("li");
+
+                let testoMessaggio = "";
+                if (typeof data === "object" && data !== null) {
+                    testoMessaggio = data.msg || data.message || JSON.stringify(data);
+                } else {
+                    testoMessaggio = data;
+                }
+
+                li.innerHTML = `<strong>[${datiUtente.username}]:</strong> ${testoMessaggio}`;
+                msgList.prepend(li);
+            });
+
+            socket.on('connect', () => {
+                document.getElementById(`badge-${datiUtente.id_user}`).innerText = "Connected";
+                document.getElementById(`badge-${datiUtente.id_user}`).classList.add('connected');
+                document.getElementById(`btn-toggle-${datiUtente.id_user}`).innerText = "Stacca Socket";
+                document.getElementById(`btn-toggle-${datiUtente.id_user}`).style.backgroundColor = "#5c2727";
+                document.getElementById(`timer-cell-${datiUtente.id_user}`).innerText = "-";
+                clearInterval(clientObj.countdownInterval);
+            });
+
+            socket.on('disconnect', () => {
+                document.getElementById(`badge-${datiUtente.id_user}`).innerText = "Disconnected";
+                document.getElementById(`badge-${datiUtente.id_user}`).classList.remove('connected');
+                document.getElementById(`btn-toggle-${datiUtente.id_user}`).innerText = "Attacca Socket";
+                document.getElementById(`btn-toggle-${datiUtente.id_user}`).style.backgroundColor = "var(--accent-green)";
+
+                let secondiPassati = 0;
+                clearInterval(clientObj.countdownInterval);
+                clientObj.countdownInterval = setInterval(() => {
+                    secondiPassati++;
+                    document.getElementById(`timer-cell-${datiUtente.id_user}`).innerText = `Fuori da: ${secondiPassati}s`;
+                }, 1000);
+            });
+        }
+
+        // --- INVIO COMANDI ---
+        function inviaMossa(idUser) {
+            const client = clientSimulati.find(c => c.dati.id_user == idUser);
+            if (!client || !client.socket.connected) {
+                alert("Client non connesso!");
+                return;
+            }
+
+            document.getElementById(`esito-${idUser}`).innerHTML = "-";
+            const fromVal = document.getElementById(`from-${idUser}`).value;
+            const toVal = document.getElementById(`to-${idUser}`).value;
+            const typeVal = document.getElementById('type-' + idUser).value;
+
+            const payload = { from: fromVal, to: toVal, type: typeVal };
+            lastEventType = typeVal;
+            client.socket.emit("game", payload);
+            console.log(`[game] Inviato da ${client.dati.username}:`, payload);
+        }
+
+        function inviaDraw(idUser, statoDraw) {
+            const client = clientSimulati.find(c => c.dati.id_user == idUser);
+            if (!client || !client.socket.connected) {
+                alert("Client non connesso!");
+                return;
+            }
+
+            document.getElementById(`esito-${idUser}`).innerHTML = "-";
+            const payload = { type: "draw", draw: statoDraw };
+            lastEventType = "draw";
+            client.socket.emit("game", payload);
+            console.log(`[game:draw] Inviato da ${client.dati.username}:`, payload);
+        }
+
+        // --- RICEZIONE E GESTIONE RISPOSTE ---
+        function gestisciRispostaServer(idUser, eventType, data) {
+            const esitoCell = document.getElementById(`esito-${idUser}`);
+            console.log(`[ON game (${eventType})] Ricevuto per ${idUser}:`, data);
+
+            if (data && data.log && data.log.status === 200) {
+                let infoDraw = "";
+                if (data.draw !== undefined) {
+                    infoDraw = data.draw ? " (Richiesta)" : " (Rifiutata)";
+                }
+                esitoCell.innerHTML = `<span class="response-badge res-ok">OK ${eventType}${infoDraw}</span>`;
+            } else {
+                esitoCell.innerHTML = `<span class="response-badge res-err">ERRORE (${eventType})</span>`;
+                
+                const errorMsg = (data && data.log && data.log.msg) ? data.log.msg : "Errore generico non specificato";
+                const errorLogBox = document.getElementById('global-error-log');
+                const errorList = document.getElementById('error-list');
+                errorLogBox.style.display = 'block';
+                
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>Utente ${idUser} (${eventType}):</strong> ${errorMsg} (Status: ${data?.log?.status || 'N/A'})`;
+                errorList.prepend(li);
+            }
+        }
+
+        function toggleConnessione(idUser) {
+            const client = clientSimulati.find(c => c.dati.id_user == idUser);
+            if (!client) return;
+
+            if (client.socket.connected) {
+                client.socket.disconnect();
+            } else {
+                client.socket.connect();
+            }
+        }
+
+        // --- GESTIONE MODAL ANIMATO DI VITTORIA ---
+        function mostraModalVittoria(victoryState) {
+            const modal = document.getElementById('victory-modal');
+            const cardBox = document.getElementById('victory-card-box');
+            const title = document.getElementById('victory-title');
+            const subtext = document.getElementById('victory-subtext');
+
+            const state = victoryState.toLowerCase();
+
+            if (state === "draw") {
+                title.innerText = "🤝 PARITÀ!";
+                title.style.color = "#f1c40f";
+                subtext.innerText = "La partita è terminata in patta concordata.";
+                cardBox.style.borderColor = "#f1c40f";
+            } else {
+                title.innerText = `🏆 VINCE IL TEAM ${state.toUpperCase()}!`;
+                subtext.innerText = `Il team ${state} ha conquistato la vittoria!`;
+                
+                const colorMap = {
+                    white: "#ffffff", black: "#aaaaaa", red: "#e74c3c",
+                    yellow: "#f1c40f", green: "#2ecc71", blue: "#3498db"
+                };
+                const teamColor = colorMap[state] || "#81b64c";
+                title.style.color = teamColor;
+                cardBox.style.borderColor = teamColor;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function chiudiModalVittoria() {
+            document.getElementById('victory-modal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

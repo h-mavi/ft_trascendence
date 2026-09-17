@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model abilities {
+  id_ability  Int      @id @default(autoincrement())
+  name        String   @db.VarChar(250)
+  description String
+  pieces      pieces[]
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model friendships {
+  id_friendship                     Int                @id @default(autoincrement())
+  id_user1                          Int
+  id_user2                          Int
+  friend_status                     friendships_status
+  sender                            Int
+  users_friendships_id_user1Tousers users              @relation("friendships_id_user1Tousers", fields: [id_user1], references: [id_user], onDelete: Cascade, map: "fk_id_friend1")
+  users_friendships_id_user2Tousers users              @relation("friendships_id_user2Tousers", fields: [id_user2], references: [id_user], onDelete: Cascade, map: "fk_id_friend2")
+  users_friendships_senderTousers   users              @relation("friendships_senderTousers", fields: [sender], references: [id_user], onDelete: Cascade)
+
+  @@unique([id_user1, id_user2], map: "unique_user_pair")
+}
+
+model matches {
+  id_match      Int             @id @default(autoincrement())
+  start_date    DateTime?       @default(now()) @db.Timestamptz(6)
+  end_date      DateTime?       @db.Timestamptz(6)
+  round         matches_round?
+  id_tournament Int?
+  history       Json?           @db.Json
+  tournaments   tournaments?    @relation(fields: [id_tournament], references: [id_tournament], onDelete: Cascade, map: "fk_id_tournament")
+  users_matches users_matches[]
+}
+
+model notifications {
+  id_notification                      Int                 @id @default(autoincrement())
+  title                                String              @db.VarChar(255)
+  description                          String
+  status                               notification_status @default(not_read)
+  id_user                              Int
+  creation_date                        DateTime?           @db.Timestamptz(6)
+  id_sender                            Int?
+  users                                users               @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "fk_id_notifications")
+  users_notifications_id_senderTousers users?              @relation("notifications_id_senderTousers", fields: [id_sender], references: [id_user], onUpdate: NoAction, map: "fk_id_sender")
+}
+
+model pieces {
+  id_piece   Int       @id @default(autoincrement())
+  name       String    @db.VarChar(250)
+  cost       Int       @default(4)
+  id_ability Int
+  info       String?
+  lore       String?
+  quote      String?
+  abilities  abilities @relation(fields: [id_ability], references: [id_ability], onDelete: NoAction, map: "fk_id_ability")
+}
+
+model tournament_players {
+  id_tournament Int
+  id_user       Int
+  tournaments   tournaments @relation(fields: [id_tournament], references: [id_tournament], onDelete: Cascade, onUpdate: NoAction, map: "fk_tp_tournament")
+  users         users       @relation(fields: [id_user], references: [id_user], onDelete: Cascade, onUpdate: NoAction, map: "fk_tp_user")
+
+  @@id([id_tournament, id_user])
+}
+
+model tournaments {
+  id_tournament      Int                  @id @default(autoincrement())
+  name               String               @db.VarChar(200)
+  status             tournaments_status?  @default(open)
+  created_by         Int
+  created_at         DateTime?            @default(now()) @db.Timestamp(6)
+  matches            matches[]
+  tournament_players tournament_players[]
+  users              users                @relation(fields: [created_by], references: [id_user], onDelete: NoAction, map: "fk_tournaments_created_by")
+}
+
+model users {
+  id_user                                      Int                  @id @default(autoincrement())
+  name                                         String               @db.VarChar(250)
+  surname                                      String               @db.VarChar(250)
+  username                                     String               @unique @db.VarChar(50)
+  password                                     String?              @db.VarChar(200)
+  email                                        String               @unique(map: "unique_email") @db.VarChar(100)
+  nationality                                  String               @db.VarChar(50)
+  image                                        String?
+  points                                       Int                  @default(500)
+  title                                        String               @default("Paesant") @db.VarChar(200)
+  id_preference                                Int                  @default(1)
+  mfa                                          Boolean              @default(false)
+  google_id                                    String?              @unique(map: "users_unique") @db.VarChar
+  friendships_friendships_id_user1Tousers      friendships[]        @relation("friendships_id_user1Tousers")
+  friendships_friendships_id_user2Tousers      friendships[]        @relation("friendships_id_user2Tousers")
+  friendships_friendships_senderTousers        friendships[]        @relation("friendships_senderTousers")
+  notifications                                notifications[]
+  notifications_notifications_id_senderTousers notifications[]      @relation("notifications_id_senderTousers")
+  tournament_players                           tournament_players[]
+  tournaments                                  tournaments[]
+  preferences                                  preferences          @relation(fields: [id_preference], references: [id_preference], onDelete: NoAction, onUpdate: NoAction, map: "fk_preference")
+  users_matches                                users_matches[]
+}
+
+model users_matches {
+  id_usermatch Int              @id @default(autoincrement())
+  id_user      Int
+  id_match     Int
+  outcome      matches_outcome?
+  team         Json             @default("[\n  {\"type\": \"Sovrano\", \"count\": 1, \"cost\": 0},\n  {\"type\": \"Campione\", \"count\": 1, \"cost\": 10},\n  {\"type\": \"Valchiria\", \"count\": 2, \"cost\": 3},\n  {\"type\": \"Minotauro\", \"count\": 2, \"cost\": 5},\n  {\"type\": \"Giullare\", \"count\": 2, \"cost\": 5},\n  {\"type\": \"Bastardo\", \"count\": 8, \"cost\": 1}\n]") @db.Json
+  matches      matches          @relation(fields: [id_match], references: [id_match], onDelete: Cascade, onUpdate: NoAction, map: "fk_id_match")
+  users        users            @relation(fields: [id_user], references: [id_user], onDelete: NoAction, map: "fk_id_user")
+}
+
+model preferences {
+  id_preference Int     @id @default(autoincrement())
+  name          String  @db.VarChar(250)
+  users         users[]
+}
+
+enum friendships_status {
+  accepted
+  pending
+}
+
+enum matches_outcome {
+  Win
+  Lose
+  Draw
+}
+
+enum matches_round {
+  F
+  SF
+  QF
+}
+
+enum notification_status {
+  read
+  not_read @map("not read")
+  pending
+}
+
+enum tournaments_status {
+  open
+  ongoing
+  closed
+}

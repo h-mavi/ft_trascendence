@@ -1,0 +1,23 @@
+{
+  "unseal_keys_b64": [
+    "aaa",
+    "aaa",
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "unseal_keys_hex": [
+    "aaa",
+    "aaa",
+    "aaa",
+    "aaa",
+    "aaa"
+  ],
+  "unseal_shares": 5,
+  "unseal_threshold": 3,
+  "recovery_keys_b64": [],
+  "recovery_keys_hex": [],
+  "recovery_keys_shares": 0,
+  "recovery_keys_threshold": 0,
+  "root_token": "aaa"
+}

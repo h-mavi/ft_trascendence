@@ -1,0 +1,76 @@
+
+services:
+  nginx:
+    image: nginx
+    container_name: nginx
+    build: ./nginx
+    ports:
+      - "8000:443"
+    depends_on:
+      - backend
+      - frontend
+  backend:
+    image: backend
+    container_name: backend
+    build: ./backend
+    environment:
+      - VAULT_ADDR=http://vault:8200
+    volumes:
+      - vault-shared:/vault/shared
+      - user-avatars:/app/media/usersAvatar
+    depends_on:
+      - postgres
+      - vault
+  frontend:
+    image: frontend
+    container_name: frontend
+    build: ./frontend
+  postgres:
+    image: postgres
+    container_name: postgres
+    build: ./postgres
+    restart: unless-stopped
+    environment:
+      - VAULT_ADDR=http://vault:8200
+    ports:
+      - "5432:5432"
+    volumes:
+      - vault-shared:/vault/shared
+      - postgres-data:/var/lib/postgresql/data
+    depends_on:
+      - vault
+  vault:
+    image: vault
+    container_name: vault
+    build: ./vault
+    restart: unless-stopped
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./vault/keys:/vault/keys
+      - vault-data:/vault/data:rw
+      - vault-logs:/vault/logs
+      - vault-shared:/vault/shared
+      - ./.env:/vault/.env:ro
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_API_ADDR=http://127.0.0.1:8200
+    ports:
+      - "8200:8200"
+    healthcheck:
+      test: ["CMD", "vault", "status", "-address=http://127.0.0.1:8200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  vault-data:
+    driver: local
+  vault-logs:
+    driver: local
+  vault-shared:
+  postgres-data:
+    driver: local
+  user-avatars:
+    driver: local

@@ -1,0 +1,111 @@
+{
+	"eatenPieceMe":
+	[
+		"*colpo di tosse* Il mio $VAR1... pagherai per questo!",
+		"Un semplice pezzo perso non fermera' il Generale Grievous!"
+	],
+	"eatenPieceOppo":
+	[
+		"Il tuo $VAR1 e' mio adesso. Un altro trofeo per la mia collezione.",
+		"Ottimo. Un pezzo in meno tra me e la vittoria."
+	],
+	"lostChampionMe":
+	[
+		"Impossibile! Nessuno sconfigge il Generale Grievous cosi' facilmente!"
+	],
+	"lostChampionOppo":
+	[
+		"Il tuo campione e' caduto, proprio come tutti i Jedi prima di lui.",
+		"Presto la scacchiera sara' coperta dai resti del tuo esercito."
+	],
+	"moveMe":
+	[
+		"Con quattro lame sono ancora piu' letale! Ecco la mia mossa!",
+		"Osserva la maestria del Generale Grievous!"
+	],
+	"checkMe":
+	[
+		"Il tuo re trema davanti a me!",
+		"*tosse minacciosa* Come osi pensare di avere il controllo?!"
+	],
+	"checkOppo":
+	[
+		"Non avevi previsto questa mossa, vero, piccolo Jedi?",
+		"La tua difesa e' patetica quanto quella dei tuoi maestri!",
+		"Il tuo re cadra', proprio come e' caduto l'Ordine Jedi!"
+	],
+	"checkMateMe":
+	[
+		"*tosse violenta* Come ho potuto perdere contro un dilettante come te?!",
+		"Questo... questo non e' possibile! Il Generale Grievous non perde!"
+	],
+	"checkMateOppo":
+	[
+		"General Kenobi... ah no, aspetta. Comunque, hai perso.",
+		"Facile. Troppo facile per un guerriero delle mie capacita'.",
+		"Un'altra vittoria da aggiungere alla mia collezione."
+	],
+	"endTurnMe":
+	[
+		"Ho finito. Fai pure la tua mossa, se ne hai il coraggio."
+	],
+	"endTurnOppo":
+	[
+		"Finalmente tocca a me! Preparati a tremare!",
+		"*tosse* Stavo iniziando ad annoiarmi... muoviti piu' in fretta la prossima volta.",
+		"Osserva la strategia di un vero generale droide!",
+		"Il Generale Grievous non aspetta nessuno."
+	],
+	"transformMe":
+	[
+		"EMERGI, $VAR1! DISTRUGGI I MIEI NEMICI COME HO DISTRUTTO I JEDI!",
+		"Ora vedrai il vero potere del Generale Grievous!"
+	],
+	"transformOppo":
+	[
+		"Un campione in piu' non ti salvera' dalla mia collezione di lame."
+	],
+	"applyBoostMe":
+	[
+		"*tosse* Adesso combatto sul serio!",
+		"Vai, $VAR1! Mostragli cosa significa affrontarmi!"
+	],
+	"applyBoostOppo":
+	[
+		"Quel $VAR1 non mi impressiona affatto. Non farmi perdere tempo, insetto!"
+	],
+	"useBoostMe":
+	[
+		"Attivo il potenziamento. Nessuno puo' fermarmi ora!"
+	],
+	"useBoostOppo":
+	[
+		"*tosse sprezzante* Non mi ha fatto niente!"
+	],
+	"eatWithBoostMe":
+	[
+		"E' il momento! Vai, $VAR1! DISTRUGGILO!",
+		"Prendi questo colpo! Vai, $VAR1!"
+	],
+	"eatWithBoostOppo":
+	[
+		"Posso vincere anche senza di lui! Hai sprecato il tuo potenziamento, sciocco!",
+		"*tosse* Non montarti la testa cosi' in fretta."
+	],
+	"checkWithBoostMe":
+	[
+		"Col potere di $VAR1, il tuo re e' ora sotto minaccia! Nessuno sfugge al Generale Grievous!"
+	],
+	"checkWithBoostOppo":
+	[
+		"Come hai fatto?! Il mio re... sotto minaccia?! Impossibile!"
+	],
+	"castlingMe":
+	[
+		"*tosse* E' il momento... ARROCCO! Persino io conosco qualche trucco!"
+	],
+	"castlingOppo":
+	[
+		"Mmm. Forse sottovalutavo la tua astuzia, piccolo Jedi."
+	]
+}

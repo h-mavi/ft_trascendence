@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess Gameplay - Multi Client Test</title>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #302e2b;
+            --card-bg: #262522;
+            --accent-green: #81b64c;
+            --accent-green-hover: #a3d16c;
+            --text-color: #ffffff;
+            --text-muted: #bababa;
+            --border-color: #403e3b;
+            --table-light: #dad8d6;
+            --accent-red: #ff4d4d;
+            --accent-blue: #2980b9;
+            --accent-purple: #8e44ad;
+            
+            /* Colori dei Team */
+            --team-white: #ffffff;
+            --team-black: #111111;
+            --team-yellow: #f1c40f;
+            --team-blue: #3498db;
+            --team-red: #e74c3c;
+            --team-green: #2ecc71;
+        }
+
+        body {
+            margin: 0;
+            padding: 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .dashboard {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 1300px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            color: #333;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background-color: #1a1917;
+            color: var(--text-muted);
+            padding: 1rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) { background-color: var(--table-light); }
+        tr:nth-child(odd) { background-color: #b5c3a7; }
+
+        td {
+            padding: 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            background-color: var(--accent-red);
+        }
+
+        .status-badge.connected { background-color: var(--accent-green); }
+
+        .playing-badge {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+            background-color: var(--accent-red);
+            transition: background-color 0.3s ease;
+        }
+
+        .playing-badge.is-playing {
+            background-color: var(--accent-green);
+        }
+
+        .btn-action {
+            background-color: #312e2b;
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .btn-action:hover { background-color: #45413d; }
+        .btn-disconnect { background-color: #5c2727; }
+        .btn-disconnect:hover { background-color: #7a3535; }
+
+        .btn-draw {
+            background-color: #d35400;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .btn-draw:hover { background-color: #e67e22; }
+
+        .btn-reject {
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .btn-reject:hover { background-color: #95a5a6; }
+
+        .game-controls {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+        }
+
+        .game-controls input[type="text"] {
+            width: 50px;
+            padding: 0.4rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .game-controls select {
+            padding: 0.4rem;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-weight: bold;
+        }
+
+        .btn-send {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-send:hover { background-color: #3498db; }
+
+        .response-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: white;
+        }
+        .res-ok { background-color: var(--accent-green); }
+        .res-err { background-color: var(--accent-red); }
+
+        .team-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(0,0,0,0.2);
+        }
+        .team-white { background-color: var(--team-white); color: #000; }
+        .team-black { background-color: var(--team-black); color: #fff; }
+        .team-yellow { background-color: var(--team-yellow); color: #000; }
+        .team-blue { background-color: var(--team-blue); color: #fff; }
+        .team-red { background-color: var(--team-red); color: #fff; }
+        .team-green { background-color: var(--team-green); color: #fff; }
+
+        #global-error-log {
+            width: 100%;
+            max-width: 1300px;
+            background-color: #5c2727;
+            border: 2px solid var(--accent-red);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            box-sizing: border-box;
+            display: none;
+        }
+        #global-error-log h3 { margin-top: 0; color: #ff4d4d; }
+        #error-list { padding-left: 1.2rem; margin: 0; color: #fff; }
+
+        /* --- PANNELLO AI MATCH (SOCKET DEDICATO) --- */
+        .ai-panel {
+            width: 100%;
+            max-width: 1300px;
+            background-color: var(--card-bg);
+            border: 2px solid var(--accent-purple);
+            border-radius: 8px;
+            padding: 1.2rem 1.5rem;
+            margin-top: 2rem;
+            box-sizing: border-box;
+        }
+        .ai-panel h3 {
+            margin-top: 0;
+            color: #c48ee0;
+        }
+        .ai-panel-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .ai-status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            background-color: var(--accent-red);
+        }
+        .ai-status-badge.connected { background-color: var(--accent-green); }
+        .btn-ai-create {
+            background-color: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-ai-create:hover { background-color: #a569bd; }
+        .btn-ai-start {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 0.55rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-ai-start:hover { background-color: var(--accent-green-hover); }
+        .ai-profile-chip {
+            font-family: monospace;
+            font-weight: bold;
+            background-color: #1a1917;
+            border: 1px solid var(--border-color);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            color: #fff;
+        }
+        #ai-log {
+            padding-left: 1.2rem;
+            margin: 0;
+            color: #fff;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        /* --- STILI OVERLAY FINALE PARTITA --- */
+        .victory-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .victory-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .victory-card {
+            background: #262522;
+            border: 3px solid #81b64c;
+            border-radius: 16px;
+            padding: 2.5rem 3.5rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            transform: scale(0.7);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .victory-modal-overlay.active .victory-card {
+            transform: scale(1);
+        }
+
+        .victory-card h1 {
+            font-size: 2.8rem;
+            margin: 0 0 1rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .victory-card p {
+            font-size: 1.2rem;
+            color: #bababa;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-modal-close {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-modal-close:hover { background-color: var(--accent-green-hover); }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <h2>⚔️ Chess Gameplay Test Bench (Stanza Attiva)</h2>
+        
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Stato</th>
+                        <th title="Playing Status">P</th>
+                        <th>Team</th>
+                        <th>Username (ID Match)</th>
+                        <th>points</th>
+                        <th>Invia Mossa ({from, to, type})</th>
+                        <th>Gestione Patta</th>
+                        <th>Ultimo Esito ON</th>
+                        <th>Timer Test</th>
+                        <th>Azioni</th>
+                    </tr>
+                </thead>
+                <tbody id="game-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PANNELLO AI MATCH: usa un socket dedicato, separato dai client di gioco -->
+    <div class="ai-panel">
+        <h3>🤖 AI Match Test (Socket Dedicato)</h3>
+        <div class="ai-panel-row">
+            <span>Stato socket AI:</span>
+            <span id="ai-socket-badge" class="ai-status-badge">Non connesso</span>
+            <span>Ultimo profilo scelto:</span>
+            <span id="ai-profile-chip" class="ai-profile-chip">-</span>
+        </div>
+        <div class="ai-panel-row">
+            <label for="ai-id-user" style="font-size:0.85rem; color:var(--text-muted);">id_user:</label>
+            <input type="text" id="ai-id-user" placeholder="es. 12345" style="width:100px; padding:0.4rem; border-radius:4px; border:1px solid #ccc; font-weight:bold;">
+            <label for="ai-username" style="font-size:0.85rem; color:var(--text-muted);">username:</label>
+            <input type="text" id="ai-username" placeholder="es. AI_Tester" style="width:140px; padding:0.4rem; border-radius:4px; border:1px solid #ccc; font-weight:bold;">
+        </div>
+        <div class="ai-panel-row">
+            <button class="btn-ai-create" onclick="creaAIMatch()">🎲 Crea AI Match (create_ai_match)</button>
+            <button class="btn-ai-start" onclick="avviaAIMatch()">▶️ Avvia AI Match (start_ai_match)</button>
+        </div>
+        <ul id="ai-log"></ul>
+    </div>
+
+    <div id="global-msg-log" style="width: 100%; max-width: 1300px; background-color: #262522; border: 2px solid var(--accent-blue); border-radius: 8px; padding: 1rem; margin-top: 1rem; box-sizing: border-box;">
+        <h3 style="margin-top: 0; color: var(--accent-blue);">💬 Game Messages</h3>
+        <ul id="msg-list" style="padding-left: 1.2rem; margin: 0; color: #fff;"></ul>
+    </div>
+
+    <div id="global-error-log">
+        <h3>🚨 Log Errori Ricevuti (status != 200)</h3>
+        <ul id="error-list"></ul>
+    </div>
+
+    <!-- MODAL FINALE PARTITA -->
+    <div id="victory-modal" class="victory-modal-overlay">
+        <div class="victory-card" id="victory-card-box">
+            <h1 id="victory-title">🤝 PARITÀ!</h1>
+            <p id="victory-subtext">La partita è terminata in patta.</p>
+            <button class="btn-modal-close" onclick="chiudiModalVittoria()">Chiudi</button>
+        </div>
+    </div>
+
+    <script>
+		console.log("inizio script");
+        const clientIniziali = JSON.parse(localStorage.getItem('play_clients')) || [];
+        const clientSimulati = [];
+        let lastEventType = "init";
+
+        const prioritaTeam = {
+            "white": 1, "black": 2,
+            "yellow": 3, "blue": 4, "red": 5, "green": 6,
+            "N/A": 99
+        };
+
+        clientIniziali.sort((a, b) => {
+            const teamA = (a.team || "N/A").toLowerCase();
+            const teamB = (b.team || "N/A").toLowerCase();
+            return (prioritaTeam[teamA] || 90) - (prioritaTeam[teamB] || 90);
+        });
+
+        function pulisciMessaggioNessunClient() {
+            const tbody = document.getElementById('game-table-body');
+            const placeholderRow = tbody.querySelector('tr td[colspan="10"]');
+            if (placeholderRow) {
+                tbody.innerHTML = '';
+            }
+        }
+
+        if(clientIniziali.length === 0) {
+            document.getElementById('game-table-body').innerHTML = `<tr><td colspan="10" style="text-align:center; color:white; background:#262522; padding:2rem;">Nessun client in partita. Avvia un match dal Test Bench precedente.</td></tr>`;
+        } else {
+            clientIniziali.forEach(c => creaRigaClientGameplay(c.dati, c.matchId, c.team));
+        }
+
+        function creaRigaClientGameplay(datiUtente, matchId, teamName, existingSocket = null) {
+            pulisciMessaggioNessunClient();
+            const teamSicuro = teamName || "N/A";
+            
+            // Se esiste un elemento per questo id_user, lo rimuoviamo per aggiornare l'interfaccia
+            const rigaEsistente = document.getElementById(`row-${datiUtente.id_user}`);
+            if (rigaEsistente) {
+                rigaEsistente.remove();
+            }
+
+            // Se viene passato un socket esistente (es. per l'AI match), riusiamo quello
+            const socket = existingSocket || io("http://localhost:8080", {
+                auth: datiUtente,
+                forceNew: true,
+                transports: ['websocket', 'polling']
+            });
+
+            // Evitiamo duplicati nel tracciamento
+            const idx = clientSimulati.findIndex(c => c.dati.id_user == datiUtente.id_user);
+            if (idx !== -1) {
+                if (clientSimulati[idx].countdownInterval) clearInterval(clientSimulati[idx].countdownInterval);
+                clientSimulati.splice(idx, 1);
+            }
+
+            const clientObj = {
+                dati: datiUtente,
+                socket: socket,
+                matchId: matchId,
+                team: teamSicuro,
+                countdownInterval: null
+            };
+            clientSimulati.push(clientObj);
+
+            const tbody = document.getElementById('game-table-body');
+            const tr = document.createElement('tr');
+            tr.id = `row-${datiUtente.id_user}`;
+            
+            const isConnected = socket.connected;
+            
+            tr.innerHTML = `
+                <td><span id="badge-${datiUtente.id_user}" class="status-badge ${isConnected ? 'connected' : ''}">${isConnected ? 'Connected' : 'Connecting'}</span></td>
+                <td style="text-align: center;"><span id="playing-badge-${datiUtente.id_user}" class="playing-badge" title="Stato Playing">P</span></td>
+                <td><span class="team-badge team-${teamSicuro.toLowerCase()}">${teamSicuro}</span></td>
+                <td><strong>${datiUtente.username}</strong><br><small style="color:#444; font-family:monospace;">ID: ${datiUtente.id_user}</small></td>
+                <td>🎯 ${datiUtente.points}</td>
+                <td>
+                    <div class="game-controls">
+                        <input type="text" id="from-${datiUtente.id_user}" placeholder="e2" maxlength="4">
+                        <input type="text" id="to-${datiUtente.id_user}" placeholder="e4" maxlength="4">
+                        <select id="type-${datiUtente.id_user}">
+                            <option value="move">move</option>
+                            <option value="moveBoost">moveBoost</option>
+                            <option value="boost">boost</option>
+                            <option value="trans">transform</option>
+                            <option value="endTurn">endTurn</option>
+                            <option value="giveUp">giveUp💀</option>
+                        </select>
+                        <button class="btn-send" onclick="inviaMossa('${datiUtente.id_user}')">Invia</button>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn-draw" onclick="inviaDraw('${datiUtente.id_user}', true)">🤝 Patta</button>
+                    <button class="btn-reject" onclick="inviaDraw('${datiUtente.id_user}', false)">❌ Rifiuta</button>
+                </td>
+                <td id="esito-${datiUtente.id_user}">-</td>
+                <td id="timer-cell-${datiUtente.id_user}">-</td>
+                <td>
+                    <button class="btn-action btn-disconnect" id="btn-toggle-${datiUtente.id_user}" onclick="toggleConnessione('${datiUtente.id_user}')">${isConnected ? 'Stacca Socket' : 'Attacca Socket'}</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+
+            // Rimuove eventuali listener registrati in precedenza sullo stesso canale
+            socket.off("game");
+            socket.off("gameMsg");
+
+            // --- LISTENERS WEBSOCKET UNIFICATO ("game") ---
+            socket.on("game", (data) => {
+                console.log(`test`);
+				const currentEventType = (data && data.type) ? data.type : lastEventType;
+                gestisciRispostaServer(datiUtente.id_user, currentEventType, data);
+
+                if (data && data.victory && data.victory !== "") {
+                    mostraModalVittoria(data.victory);
+                }
+            });
+
+            socket.on("gameMsg", (data) => {
+                const msgList = document.getElementById("msg-list");
+                const li = document.createElement("li");
+
+                let testoMessaggio = "";
+                if (typeof data === "object" && data !== null) {
+                    testoMessaggio = data.msg || data.message || JSON.stringify(data);
+                } else {
+                    testoMessaggio = data;
+                }
+
+                li.innerHTML = `<strong>[${datiUtente.username}]:</strong> ${testoMessaggio}`;
+                msgList.prepend(li);
+            });
+
+            socket.on('connect', () => {
+                const badge = document.getElementById(`badge-${datiUtente.id_user}`);
+                if (badge) {
+                    badge.innerText = "Connected";
+                    badge.classList.add('connected');
+                }
+                const btn = document.getElementById(`btn-toggle-${datiUtente.id_user}`);
+                if (btn) {
+                    btn.innerText = "Stacca Socket";
+                    btn.style.backgroundColor = "#5c2727";
+                }
+                const timerCell = document.getElementById(`timer-cell-${datiUtente.id_user}`);
+                if (timerCell) timerCell.innerText = "-";
+                clearInterval(clientObj.countdownInterval);
+            });
+
+            socket.on('disconnect', () => {
+                const badge = document.getElementById(`badge-${datiUtente.id_user}`);
+                if (badge) {
+                    badge.innerText = "Disconnected";
+                    badge.classList.remove('connected');
+                }
+                const playingBadge = document.getElementById(`playing-badge-${datiUtente.id_user}`);
+                if (playingBadge) {
+                    playingBadge.classList.remove('is-playing');
+                }
+                const btn = document.getElementById(`btn-toggle-${datiUtente.id_user}`);
+                if (btn) {
+                    btn.innerText = "Attacca Socket";
+                    btn.style.backgroundColor = "var(--accent-green)";
+                }
+
+                let secondiPassati = 0;
+                clearInterval(clientObj.countdownInterval);
+                clientObj.countdownInterval = setInterval(() => {
+                    secondiPassati++;
+                    const timerCell = document.getElementById(`timer-cell-${datiUtente.id_user}`);
+                    if (timerCell) timerCell.innerText = `Fuori da: ${secondiPassati}s`;
+                }, 1000);
+            });
+        }
+
+        // --- POLLING STATO "amiplaying" (OGNI SECONDO) ---
+        setInterval(() => {
+            clientSimulati.forEach(client => {
+                if (client.socket && client.socket.connected) {
+                    client.socket.emit("amiplaying", (isPlaying) => {
+                        const playingBadge = document.getElementById(`playing-badge-${client.dati.id_user}`);
+                        if (playingBadge) {
+                            if (isPlaying) {
+                                playingBadge.classList.add('is-playing');
+                            } else {
+                                playingBadge.classList.remove('is-playing');
+                            }
+                        }
+                    });
+                }
+            });
+        }, 1000);
+
+        // --- INVIO COMANDI ---
+        function inviaMossa(idUser) {
+            const client = clientSimulati.find(c => c.dati.id_user == idUser);
+            if (!client || !client.socket.connected) {
+                alert("Client non connesso!");
+                return;
+            }
+
+            document.getElementById(`esito-${idUser}`).innerHTML = "-";
+            const fromVal = document.getElementById(`from-${idUser}`).value;
+            const toVal = document.getElementById(`to-${idUser}`).value;
+            const typeVal = document.getElementById('type-' + idUser).value;
+
+            const payload = { from: fromVal, to: toVal, type: typeVal };
+            lastEventType = typeVal;
+            client.socket.emit("game", payload);
+            console.log(`[game] Inviato da ${client.dati.username}:`, payload);
+        }
+
+        function inviaDraw(idUser, statoDraw) {
+            const client = clientSimulati.find(c => c.dati.id_user == idUser);
+            if (!client || !client.socket.connected) {
+                alert("Client non connesso!");
+                return;
+            }
+
+            document.getElementById(`esito-${idUser}`).innerHTML = "-";
+            const payload = { type: "draw", draw: statoDraw };
+            lastEventType = "draw";
+            client.socket.emit("game", payload);
+            console.log(`[game:draw] Inviato da ${client.dati.username}:`, payload);
+        }
+
+        // --- RICEZIONE E GESTIONE RISPOSTE ---
+        function gestisciRispostaServer(idUser, eventType, data) {
+            const esitoCell = document.getElementById(`esito-${idUser}`);
+            console.log(`[ON game (${eventType})] Ricevuto per ${idUser}:`, data);
+            logAI(`dati ricevuti da:`, `${data.type}`);
+            if (data && data.log && data.log.status === 200) {
+                let infoDraw = "";
+                if (data.draw !== undefined) {
+                    infoDraw = data.draw ? " (Richiesta)" : " (Rifiutata)";
+                }
+                if (esitoCell) esitoCell.innerHTML = `<span class="response-badge res-ok">OK ${eventType}${infoDraw}</span>`;
+            } else {
+                if (esitoCell) esitoCell.innerHTML = `<span class="response-badge res-err">ERRORE (${eventType})</span>`;
+                
+                const errorMsg = (data && data.log && data.log.msg) ? data.log.msg : "Errore generico non specificato";
+                const errorLogBox = document.getElementById('global-error-log');
+                const errorList = document.getElementById('error-list');
+                errorLogBox.style.display = 'block';
+                
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>Utente ${idUser} (${eventType}):</strong> ${errorMsg} (Status: ${data?.log?.status || 'N/A'})`;
+                errorList.prepend(li);
+            }
+        }
+
+        function toggleConnessione(idUser) {
+            const client = clientSimulati.find(c => c.dati.id_user == idUser);
+            if (!client) return;
+
+            if (client.socket.connected) {
+                client.socket.disconnect();
+            } else {
+                client.socket.connect();
+            }
+        }
+
+        // --- GESTIONE MODAL ANIMATO DI VITTORIA ---
+        function mostraModalVittoria(victoryState) {
+            const modal = document.getElementById('victory-modal');
+            const cardBox = document.getElementById('victory-card-box');
+            const title = document.getElementById('victory-title');
+            const subtext = document.getElementById('victory-subtext');
+
+            const state = victoryState.toLowerCase();
+
+            if (state === "draw") {
+                title.innerText = "🤝 PARITÀ!";
+                title.style.color = "#f1c40f";
+                subtext.innerText = "La partita è terminata in patta concordata.";
+                cardBox.style.borderColor = "#f1c40f";
+            } else {
+                title.innerText = `🏆 VINCE IL TEAM ${state.toUpperCase()}!`;
+                subtext.innerText = `Il team ${state} ha conquistato la vittoria!`;
+                
+                const colorMap = {
+                    white: "#ffffff", black: "#aaaaaa", red: "#e74c3c",
+                    yellow: "#f1c40f", green: "#2ecc71", blue: "#3498db"
+                };
+                const teamColor = colorMap[state] || "#81b64c";
+                title.style.color = teamColor;
+                cardBox.style.borderColor = teamColor;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function chiudiModalVittoria() {
+            document.getElementById('victory-modal').classList.remove('active');
+        }
+
+        // =====================================================================
+        // --- SEZIONE AI MATCH: socket dedicato, indipendente dai client sopra ---
+        // =====================================================================
+
+        const AIprofiles = {
+            FIRST_AI: "First",
+            GMU: "gmu",
+            DEBUG: "Debug",
+            AM: "AM",
+            HAL9000: "HAL9000",
+            GRIEVOUS: "Grievous"
+        };
+
+        let aiSocket = null;
+        let ultimoMatchIdAI = null;
+
+        function logAI(testo, tipo = "info") {
+            const list = document.getElementById('ai-log');
+            const li = document.createElement('li');
+            const colori = { info: "#fff", ok: "#a3d16c", err: "#ff4d4d" };
+            li.style.color = colori[tipo] || "#fff";
+            const ora = new Date().toLocaleTimeString();
+            li.innerHTML = `<span style="color:#888;">[${ora}]</span> ${testo}`;
+            list.prepend(li);
+        }
+
+        function getAuthUtenteAI() {
+            const idUser = document.getElementById('ai-id-user').value.trim();
+            const username = document.getElementById('ai-username').value.trim();
+            return { id_user: idUser, username: username, points: 0 };
+        }
+
+        function getOrCreateAISocket() {
+            if (aiSocket) return aiSocket;
+
+            const authData = getAuthUtenteAI();
+            if (!authData.id_user || !authData.username) {
+                alert("Inserisci id_user e username per il socket AI prima di procedere!");
+                return null;
+            }
+
+            aiSocket = io("http://localhost:8080", {
+                auth: authData,
+                forceNew: true,
+                transports: ['websocket', 'polling']
+            });
+
+            const badge = document.getElementById('ai-socket-badge');
+
+            aiSocket.on('connect', () => {
+                badge.innerText = "Connesso";
+                badge.classList.add('connected');
+                logAI("Socket AI connesso.", "ok");
+            });
+
+            aiSocket.on('disconnect', () => {
+                badge.innerText = "Non connesso";
+                badge.classList.remove('connected');
+                logAI("Socket AI disconnesso.", "err");
+            });
+
+            aiSocket.on('connect_error', (err) => {
+                logAI(`Errore di connessione: ${err.message}`, "err");
+            });
+
+            // Gestore risposta create_ai_match da evento
+            aiSocket.on('create_ai_match', (data) => {
+                logAI(`Risposta create_ai_match: ${data.log.status === 200 ? "ok" : "err"}`);
+                if (data && data.log && data.log.status === 200) {
+                    if (data.matchId) ultimoMatchIdAI = data.matchId;
+                    
+                    // Inizializza il giocatore con il team ricevuto ("white" o "black")
+					if (!data.team)
+						alert(`data has no team: ${JSON.stringify(data, null, 2)}`);
+                    const teamColor = data.team ? data.team.toLowerCase() : "white";
+                    const authData = getAuthUtenteAI();
+                    creaRigaClientGameplay(authData, data.matchId || ultimoMatchIdAI, teamColor, aiSocket);
+                }
+            });
+
+            return aiSocket;
+        }
+
+        function creaAIMatch() {
+            const socket = getOrCreateAISocket();
+            if (!socket) return;
+
+            const chiaviProfilo = Object.keys(AIprofiles);
+            const chiaveCasuale = chiaviProfilo[Math.floor(Math.random() * chiaviProfilo.length)];
+            const profiloCasuale = AIprofiles[chiaveCasuale];
+
+            document.getElementById('ai-profile-chip').innerText = profiloCasuale;
+
+            const inviaRichiesta = () => {
+                socket.emit("create_ai_match", { profile: profiloCasuale, team: "black" }, (ack) => {
+                    if (ack) {
+                        logAI(`ACK create_ai_match: ${ack?.log?.msg || JSON.stringify(ack)}`);
+                        if (ack.matchId) ultimoMatchIdAI = ack.matchId;
+
+                        // Se l'ACK restituisce status 200, registriamo il giocatore sulla tabella usando il team ricevuto
+                        if (ack.log && ack.log.status === 200) {
+                            const teamColor = ack.team ? ack.team.toLowerCase() : "white";
+                            const authData = getAuthUtenteAI();
+                            creaRigaClientGameplay(authData, ack.matchId || ultimoMatchIdAI, teamColor, aiSocket);
+                        }
+                    }
+                });
+                logAI(`Inviato create_ai_match con req="${profiloCasuale}"`);
+            };
+
+            if (socket.connected) {
+                inviaRichiesta();
+            } else {
+                socket.once('connect', inviaRichiesta);
+            }
+        }
+
+        function avviaAIMatch() {
+            const socket = getOrCreateAISocket();
+            if (!socket) return;
+
+            const inviaRichiesta = () => {
+                socket.emit("start_ai_match", {}, (ack) => {
+                    if (ack) {
+                        logAI(`ACK start_ai_match: ${ack?.log?.msg || JSON.stringify(ack)}`);
+                    }
+                });
+                logAI("Inviato start_ai_match");
+            };
+
+            if (socket.connected) {
+                inviaRichiesta();
+            } else {
+                socket.once('connect', inviaRichiesta);
+            }
+        }
+    </script>
+</body>
+</html>
