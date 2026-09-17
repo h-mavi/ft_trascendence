@@ -1,6 +1,6 @@
 *This project has been created as part of the 42 curriculum by mbiagi, lparolis, edraccan, alerusso, mfanelli*
 
-# ft_transcendence
+# ft_transcendence <img src="https://42cv.dev/api/badge/cmocr0rwf00040ko9gjxazgmo/project/5017350" align="right"/>
 
 ## Description
 
